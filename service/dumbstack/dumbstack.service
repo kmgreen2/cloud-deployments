@@ -1,0 +1,9 @@
+[Unit]
+Description=Dumbstack Bridged Load Balancer
+After=syslog.target network.target haproxy.service
+
+[Service]
+Type=forking
+PIDFile=/var/spool/dumbstack/master.pid
+ExecStart=/service/dumbstack/dumbstack_daemon.sh
+ExecStop=/service/dumbstack/dumbstack_kill.sh

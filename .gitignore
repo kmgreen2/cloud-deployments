@@ -1,0 +1,11 @@
+root-dir/
+id_rsa.pub
+id_rsa_instance
+id_rsa_instance.pub
+*.hwm
+*.pwd
+*.pwi
+*.swp
+.terraform
+*.tfstate
+*.tfstate.backup

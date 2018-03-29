@@ -1,0 +1,118 @@
+{
+  "variables": {
+    "aws_access_key": "",
+    "aws_secret_key": ""
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "region": "us-west-2",
+    "source_ami": "ami-a042f4d8",
+    "instance_type": "t2.micro",
+    "ssh_username": "centos",
+    "ami_name": "dumbstack {{timestamp}}"
+  }],
+  "provisioners": [
+   {
+    "type": "file",
+    "source": "/config/haproxy.cfg",
+    "destination": "/tmp"
+   },
+   {
+    "type": "file",
+    "source": "/root/.ssh/id_rsa.pub",
+    "destination": "/tmp/id_rsa.pub"
+   },
+   {
+    "type": "file",
+    "source": "/root/.ssh/id_rsa_instance.pub",
+    "destination": "/tmp/id_rsa_instance.pub"
+   },
+   {
+    "type": "file",
+    "source": "/root/.ssh/id_rsa_instance",
+    "destination": "/tmp/id_rsa_instance"
+   },
+   {
+    "type": "shell",
+    "inline_shebang": "/bin/bash -xe", 
+    "inline": ["sudo yum install -y haproxy", 
+               "sudo cp /tmp/haproxy.cfg /etc/haproxy/haproxy.cfg",
+               "sudo cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.orig",
+               "sudo yum install -y python", 
+               "sudo yum install -y wget", 
+               "sudo yum install -y nc", 
+               "wget https://bootstrap.pypa.io/get-pip.py", 
+               "sudo python get-pip.py",
+               "rm get-pip.py",
+               "sudo pip install boto3",
+               "mkdir -p /home/centos/.aws",
+               "sudo mkdir -p /service/dumbstack",
+               "sudo mkdir -p /service/common",
+               "sudo chown centos /service/dumbstack",
+               "sudo chown centos /service/common",
+               "sudo sed -i 's/enforcing/permissive/' /etc/selinux/config",
+               "cat /tmp/id_rsa.pub >> /home/centos/.ssh/authorized_keys",
+               "cat /tmp/id_rsa_instance.pub >> /home/centos/.ssh/authorized_keys",
+               "mv /tmp/id_rsa_instance /home/centos/.ssh/",
+               "rm /tmp/id_rsa.pub"
+              ]
+   },
+   {
+    "type": "file",
+    "source": "/service/dumbstack/dumbstack.cfg",
+    "destination": "/service/dumbstack"
+   },
+   {
+    "type": "file",
+    "source": "/service/dumbstack/dumbstack_configure.py",
+    "destination": "/service/dumbstack"
+   },
+   {
+    "type": "file",
+    "source": "/service/dumbstack/dumbstack_daemon.sh",
+    "destination": "/service/dumbstack"
+   },
+   {
+    "type": "file",
+    "source": "/service/dumbstack/dumbstack_kill.sh",
+    "destination": "/service/dumbstack"
+   },
+   {
+    "type": "file",
+    "source": "/service/dumbstack/dumbstack.service",
+    "destination": "/service/dumbstack"
+   },
+   {
+    "type": "shell",
+    "inline_shebang": "/bin/bash -xe", 
+    "inline": ["sudo cp /service/dumbstack/dumbstack.service /usr/lib/systemd/system",
+               "sudo systemctl enable haproxy",
+               "sudo systemctl enable dumbstack",
+               "sudo systemctl daemon-reload"
+              ]
+   },
+   {
+    "type": "file",
+    "source": "/service/common/setup_iface.py",
+    "destination": "/service/common"
+   },
+   {
+    "type": "file",
+    "source": "/service/common/copy_iface.sh",
+    "destination": "/service/common"
+   },
+   {
+    "type": "file",
+    "source": "/root/.aws/config",
+    "destination": "/home/centos/.aws"
+   },
+   {
+    "type": "file",
+    "source": "/root/.aws/credentials",
+    "destination": "/home/centos/.aws"
+   }
+  ]
+}
+

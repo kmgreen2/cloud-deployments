@@ -1,0 +1,9 @@
+[Unit]
+Description=Echo server
+After=syslog.target network.target
+
+[Service]
+Type=forking
+PIDFile=/var/spool/echoserver/master.pid
+ExecStart=/service/echoserver/echoserver_daemon.sh
+ExecStop=/service/echoserver/echoserver_kill.sh
