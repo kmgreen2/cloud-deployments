@@ -2,9 +2,61 @@ FROM golang:1.9.2
 
 RUN apt-get update
 RUN apt-get install dnsutils -y
+RUN apt-get install wget -y
 RUN apt-get install netcat -y
 RUN apt-get install net-tools -y
 RUN apt-get install vim -y
+RUN apt-get install autoconf -y
+RUN apt-get install libtool -y
+
+# Install curl (apt installs a version of curl that does not support https)
+# https support is needed by a Solidity dependency
+RUN git clone https://github.com/bagder/curl.git
+RUN apt-get build-dep curl
+WORKDIR /curl
+RUN ./buildconf
+RUN ./configure
+RUN make
+RUN make install
+
+# Install cmake (needed to build Solidity)
+# RUN wget https://cmake.org/files/v3.10/cmake-3.10.3.tar.gz
+# RUN tar xvf cmake-3.10.3.tar.gz
+# WORKDIR /cmake-3.10.3
+# RUN ./bootstrap
+# RUN make
+# RUN make install
+# RUN rm -rf /cmake-3.10.3
+
+# Install kmgreen2's version of Ethereum
+RUN git clone https://github.com/kmgreen2/go-ethereum.git $GOPATH/src/github.com/ethereum/go-ethereum
+
+WORKDIR $GOPATH/src/github.com/ethereum/go-ethereum
+
+RUN go install -v ./...
+
+RUN echo "set -o vi" >> ~/.bashrc
+
+WORKDIR /
+
+# Install Devle
+RUN go get github.com/derekparker/delve/cmd/dlv
+
+WORKDIR /tmp
+
+# Install Solidity compiler
+#RUN git clone https://github.com/ethereum/cpp-ethereum.git
+#RUN git submodule update --init
+#RUN mkdir cpp-ethereum/build
+#RUN cd cpp-ethereum/build
+#RUN cmake -DJSONRPC=OFF -DMINER=OFF -DETHKEY=OFF -DSERPENT=OFF -DGUI=OFF -DTESTS=OFF -DJSCONSOLE=OFF ..
+#RUN make -j4 
+#RUN make install
+
+# Link the Solidity compiler (in geth)
+#admin.setSolc("path/to/solc")
+
+WORKDIR /
 
 ENV ETH_DATA_DIR=/var/lib/ethereum/data \
     # Uhncomment andf build if you want to run with debug
@@ -23,20 +75,6 @@ RUN set -ex; \
     addgroup --system "$ETH_USER"; \
     mkdir -p "$ETH_DATA_DIR $ETH_LOG_DIR"; \
     chown "$ETH_USER:$ETH_USER" "$ETH_DATA_DIR $ETH_LOG_DIR"
-
-# Install kmgreen2's version of Ethereum
-RUN git clone https://github.com/kmgreen2/go-ethereum.git $GOPATH/src/github.com/ethereum/go-ethereum
-
-WORKDIR $GOPATH/src/github.com/ethereum/go-ethereum
-
-RUN go install -v ./...
-
-RUN echo "set -o vi" >> ~/.bashrc
-
-WORKDIR /
-
-# Install Devle
-RUN go get github.com/derekparker/delve/cmd/dlv
 
 # Expose the port Delve needs for remote debugging
 EXPOSE $ETH_DEBUG_PORT
