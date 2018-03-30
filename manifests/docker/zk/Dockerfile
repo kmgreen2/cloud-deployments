@@ -51,4 +51,4 @@ EXPOSE $ZOO_PORT 2888 3888
 ENV PATH=$PATH:/$DISTRO_NAME/bin \
     ZOOCFGDIR=$ZOO_CONF_DIR
 
-COPY scripts/zk/zk-docker-entrypoint.sh /
+COPY service/zk/zk-docker-entrypoint.sh /

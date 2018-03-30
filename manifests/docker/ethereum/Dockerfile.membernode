@@ -1,5 +1,5 @@
 FROM kmgreen2/ethereum-base:latest
 
-COPY /service/ethereum/start_membernode.sh /
+COPY service/ethereum/start_membernode.sh /
 
 EXPOSE $ETH_PORT $ETH_RPC_PORT

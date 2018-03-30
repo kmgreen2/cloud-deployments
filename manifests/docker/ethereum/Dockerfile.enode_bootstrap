@@ -1,6 +1,6 @@
 FROM kmgreen2/ethereum-base:latest
 
-COPY /service/enode_server/enode_server.go /
+COPY service/enode_server/enode_server.go /
 RUN mkdir -p /var/log/ethereum
 RUN go build enode_server.go
 

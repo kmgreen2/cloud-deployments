@@ -17,7 +17,7 @@ RUN  wget -q -O - http://www.eu.apache.org/dist/kafka/$KAFKA_VERSION/kafka_$SCAL
 
 ENV PATH /opt/kafka/bin:$PATH
 
-COPY /service/kafka/kafka-docker-entrypoint.sh /kafka-docker-entrypoint.sh
+COPY service/kafka/kafka-docker-entrypoint.sh /kafka-docker-entrypoint.sh
 
 COPY ./config/kafka/conf /opt/kafka/config
 VOLUME ["/opt/kafka/config"]
