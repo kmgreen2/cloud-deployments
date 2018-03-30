@@ -1,0 +1,73 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: ethereum-member
+  namespace: ethereum
+spec:
+  selector:
+    matchLabels:
+      app: ethereum-member
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: ethereum-member
+    spec:
+      containers:
+      - name: ethereum-membernode
+        imagePullPolicy: Always
+        image: "kmgreen2/ethereum-member:latest"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "0.1"
+        ports:
+        - containerPort: 30303
+          name: server
+        - containerPort: 8101
+          name: rpc
+        command:
+        - sh
+        - -c
+        - "/start_membernode.sh"
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "nc -z -v -u -w5 localhost 30303"
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "nc -z -v -u -w5 localhost 30303"
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        volumeMounts:
+        - name: logdir
+          mountPath: /var/log/ethereum
+      securityContext:
+        fsGroup: 1000
+      volumes:
+        - name: logdir
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ethereum-member
+  namespace: ethereum
+  labels:
+    app: ethereum-member
+spec:
+  ports:
+  - port: 30303
+    name: client
+  - port: 8101
+    name: rpc
+  selector:
+    app: ethereum-member
+  clusterIP: None

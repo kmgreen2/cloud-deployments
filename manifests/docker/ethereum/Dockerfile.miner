@@ -1,0 +1,3 @@
+FROM kmgreen2/ethereum-base:latest
+
+COPY /service/ethereum/start_miner.sh /

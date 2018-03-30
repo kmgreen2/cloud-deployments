@@ -1,0 +1,10 @@
+FROM kmgreen2/ethereum-base:latest
+
+COPY /service/enode_server/enode_server.go /
+RUN mkdir -p /var/log/ethereum
+RUN go build enode_server.go
+
+# Command to run
+# ENTRYPOINT /enode_server -port $ETH_ENODE_BOOTSTRAP_PORT
+
+EXPOSE 80

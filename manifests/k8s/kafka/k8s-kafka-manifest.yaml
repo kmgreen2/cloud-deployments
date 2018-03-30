@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kafka
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  namespace: kafka
+  labels:
+    app: kafka
+spec:
+  ports:
+  - port: 9092
+    name: client
+  selector:
+    app: kafka
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: kafka
+  namespace: kafka
+spec:
+  selector:
+    matchLabels:
+      app: kafka
+  serviceName: kafka
+  replicas: 2
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: Parallel
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+      - name: kubernetes-kafka
+        imagePullPolicy: Always
+        image: "kmgreen2/kafka:0.10.2.1"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "0.1"
+        ports:
+        - containerPort: 9092
+          name: client
+        command:
+        - sh
+        - -c
+        - "/kafka-docker-entrypoint.sh kafkaonly"
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "nc -z -v -w5 localhost 9092"
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "nc -z -v -w5 localhost 9092"
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        volumeMounts:
+        - name: logdir
+          mountPath: /tmp/kafka-logs
+      securityContext:
+        fsGroup: 1000
+  volumeClaimTemplates:
+  - metadata:
+      name: logdir
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi

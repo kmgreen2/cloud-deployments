@@ -1,0 +1,44 @@
+FROM golang:1.9.2
+
+RUN apt-get update
+RUN apt-get install dnsutils -y
+RUN apt-get install netcat -y
+RUN apt-get install net-tools -y
+RUN apt-get install vim -y
+
+ENV ETH_DATA_DIR=/var/lib/ethereum/data \
+    # Uhncomment andf build if you want to run with debug
+    ETH_DEBUG="1" \
+    ETH_LOG_DIR=/var/log/ethereum \
+    ETH_BOOT_PORT=30301 \
+    ETH_PORT=30303 \
+    ETH_DEBUG_PORT=2345 \
+    ETH_ENODE_BOOTSTRAP_PORT=80 \
+    ETH_RPC_PORT=8101 \
+    ETH_USER=ethereum
+
+# Add a user and make dirs
+RUN set -ex; \
+    adduser --system "$ETH_USER"; \
+    addgroup --system "$ETH_USER"; \
+    mkdir -p "$ETH_DATA_DIR $ETH_LOG_DIR"; \
+    chown "$ETH_USER:$ETH_USER" "$ETH_DATA_DIR $ETH_LOG_DIR"
+
+# Install kmgreen2's version of Ethereum
+RUN git clone https://github.com/kmgreen2/go-ethereum.git $GOPATH/src/github.com/ethereum/go-ethereum
+
+WORKDIR $GOPATH/src/github.com/ethereum/go-ethereum
+
+RUN go install -v ./...
+
+RUN echo "set -o vi" >> ~/.bashrc
+
+WORKDIR /
+
+# Install Devle
+RUN go get github.com/derekparker/delve/cmd/dlv
+
+# Expose the port Delve needs for remote debugging
+EXPOSE $ETH_DEBUG_PORT
+
+VOLUME ["$ETH_DATA_DIR", "$ETH_LOG_DIR"]

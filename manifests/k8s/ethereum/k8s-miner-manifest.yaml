@@ -1,0 +1,36 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: ethereum-miner
+  namespace: ethereum
+spec:
+  selector:
+    matchLabels:
+      app: ethereum-miner
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ethereum-miner
+    spec:
+      containers:
+      - name: ethereum-minernode
+        imagePullPolicy: Always
+        image: "kmgreen2/ethereum-miner:latest"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "0.1"
+        ports:
+        command:
+        - sh
+        - -c
+        - "/start_miner.sh"
+        volumeMounts:
+        - name: logdir
+          mountPath: /var/log/ethereum
+      securityContext:
+        fsGroup: 1000
+      volumes:
+        - name: logdir
+          emptyDir: {}

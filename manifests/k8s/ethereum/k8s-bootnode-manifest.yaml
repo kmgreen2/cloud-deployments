@@ -1,0 +1,108 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: ethereum-boot
+  namespace: ethereum
+  annotations:
+    container.apparmor.security.beta.kubernetes.io/ethereum-bootnode: "unconfined"
+spec:
+  selector:
+    matchLabels:
+      app: ethereum-boot
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ethereum-boot
+    spec:
+      containers:
+      - name: ethereum-bootnode
+        securityContext:
+          capabilities:
+            add: ["SYS_PTRACE"]
+        imagePullPolicy: Always
+        image: "kmgreen2/ethereum-boot:latest"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "0.1"
+        ports:
+        - containerPort: 30301
+          name: server
+        command:
+        - sh
+        - -c
+        - "/start_bootnode.sh"
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "nc -z -v -u -w5 localhost 30301"
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "nc -z -v -u -w5 localhost 30301"
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        volumeMounts:
+        - name: logdir
+          mountPath: /var/log/ethereum
+      - name: ethereum-enode-bootstrap
+        imagePullPolicy: Always
+        image: "kmgreen2/ethereum-enode-bootstrap:latest"
+        resources:
+          requests:
+            memory: "16Mi"
+            cpu: "0.1"
+        ports:
+        - containerPort: 80
+          name: enode-bootstrap
+        command:
+        - sh
+        - -c
+        - "/enode_server"
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "nc -z -v -w5 localhost 80"
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "nc -z -v -w5 localhost 80"
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        volumeMounts:
+        - name: logdir
+          mountPath: /var/log/ethereum
+      securityContext:
+        fsGroup: 1000
+      volumes:
+        - name: logdir
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ethereum-boot
+  namespace: ethereum
+  labels:
+    app: ethereum-boot
+spec:
+  ports:
+  - port: 80
+    name: bootstrap-client
+    protocol: TCP
+  selector:
+    app: ethereum-boot
+
