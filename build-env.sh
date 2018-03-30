@@ -1,1 +1,1 @@
-./scripts/docker/build-images.sh
+./scripts/docker/base/build-images.sh

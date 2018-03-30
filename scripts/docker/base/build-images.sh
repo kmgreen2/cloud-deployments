@@ -1,5 +1,5 @@
-BASE_DIR=`dirname $0`"/../.."
-DOCKER_MANIFEST_DIR=${BASE_DIR}/manifests/docker
+BASE_DIR=`dirname $0`"/../../.."
+DOCKER_MANIFEST_DIR=${BASE_DIR}/manifests/docker/base
 
 if [[ -z ${ARG_AWS_ACCESS_KEY_ID} ]]; then
     echo -n "Enter AWS Access Key (then hit enter): "

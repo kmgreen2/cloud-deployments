@@ -1,4 +1,4 @@
-BASE_DIR=`dirname $0`"/../.."
+BASE_DIR=`dirname $0`"/../../.."
 BASE_DIR=`realpath ${BASE_DIR}`
 ROOT_MNT=${BASE_DIR}/root-dir
 MANIFEST_MNT=${BASE_DIR}/manifests

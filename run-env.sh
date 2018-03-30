@@ -1,1 +1,1 @@
-./scripts/docker/run-image.sh
+./scripts/docker/base/run-image.sh
