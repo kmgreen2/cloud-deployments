@@ -35,7 +35,7 @@ spec:
             command:
             - sh
             - -c
-            - "nc -z -v -u -w5 localhost 30303"
+            - "nc -z -v -u localhost 30303"
           initialDelaySeconds: 10
           timeoutSeconds: 5
         livenessProbe:
@@ -43,7 +43,7 @@ spec:
             command:
             - sh
             - -c
-            - "nc -z -v -u -w5 localhost 30303"
+            - "nc -z -v -u localhost 30303"
           initialDelaySeconds: 10
           timeoutSeconds: 5
         volumeMounts:

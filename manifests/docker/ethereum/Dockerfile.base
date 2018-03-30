@@ -8,7 +8,7 @@ RUN apt-get install vim -y
 
 ENV ETH_DATA_DIR=/var/lib/ethereum/data \
     # Uhncomment andf build if you want to run with debug
-    ETH_DEBUG="1" \
+    #ETH_DEBUG="1" \
     ETH_LOG_DIR=/var/log/ethereum \
     ETH_BOOT_PORT=30301 \
     ETH_PORT=30303 \

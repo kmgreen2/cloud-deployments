@@ -2,17 +2,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: ethereum-ingress
-  annotations:
-    ingress.kubernetes.io/rewrite-target: /
 spec:
   backend:
     serviceName: default-http-backend
     servicePort: 80
-  rules:
-  - host: bootnode.debug
-    tcp:
-      paths:
-      - path: /
-        backend:
-          serviceName: echoserver
-          servicePort: 8080
