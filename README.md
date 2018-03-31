@@ -28,6 +28,12 @@ The following infrastructure will be deployed to AWS (us-west-2 right now):
 
 Here is a figure captuing the main components:
 
+<object data="https://github.com/kmgreen2/cloud-deployments/blob/master/docs/VPCFigure.pdf" type="application/pdf" width="700px" height="700px">
+    <embed src="https://github.com/kmgreen2/cloud-deployments/blob/master/docs/VPCFigure.pdf">
+        This browser does not support PDFs. Please download the PDF to view it: <a href="https://github.com/kmgreen2/cloud-deployments/blob/master/docs/VPCFigure.pdf">Download PDF</a>.</p>
+    </embed>
+</object>
+
 ## Quickstart
 
 ### Before You Begin
