@@ -8,25 +8,37 @@ RUN apt-get install net-tools -y
 RUN apt-get install vim -y
 RUN apt-get install autoconf -y
 RUN apt-get install libtool -y
+RUN apt-get install libssl-dev -y
+RUN apt-get install zlib1g -y
+RUN apt-get install zlib1g-dev -y
+
+WORKDIR /tmp
 
 # Install curl (apt installs a version of curl that does not support https)
 # https support is needed by a Solidity dependency
 RUN git clone https://github.com/bagder/curl.git
-RUN apt-get build-dep curl
-WORKDIR /curl
+
+WORKDIR /tmp/curl
+
 RUN ./buildconf
-RUN ./configure
+RUN ./configure --with-ssl
 RUN make
 RUN make install
 
+RUN rm -rf /tmp/curl/
+
+WORKDIR /tmp
+
 # Install cmake (needed to build Solidity)
-# RUN wget https://cmake.org/files/v3.10/cmake-3.10.3.tar.gz
-# RUN tar xvf cmake-3.10.3.tar.gz
-# WORKDIR /cmake-3.10.3
-# RUN ./bootstrap
-# RUN make
-# RUN make install
-# RUN rm -rf /cmake-3.10.3
+RUN git clone -b v3.9.1 https://cmake.org/cmake.git cmake
+WORKDIR /tmp/cmake
+RUN ./bootstrap --system-curl
+RUN make
+RUN make install
+
+WORKDIR /tmp
+
+RUN rm -rf /tmp/cmake
 
 # Install kmgreen2's version of Ethereum
 RUN git clone https://github.com/kmgreen2/go-ethereum.git $GOPATH/src/github.com/ethereum/go-ethereum
@@ -37,26 +49,38 @@ RUN go install -v ./...
 
 RUN echo "set -o vi" >> ~/.bashrc
 
-WORKDIR /
-
 # Install Devle
 RUN go get github.com/derekparker/delve/cmd/dlv
 
 WORKDIR /tmp
 
+#Install leveldb
+RUN git clone https://github.com/google/leveldb.git
+WORKDIR /tmp/leveldb
+RUN cmake .
+RUN make
+RUN make install
+RUN ldconfig
+
+WORKDIR /tmp
+
 # Install Solidity compiler
-#RUN git clone https://github.com/ethereum/cpp-ethereum.git
-#RUN git submodule update --init
-#RUN mkdir cpp-ethereum/build
-#RUN cd cpp-ethereum/build
-#RUN cmake -DJSONRPC=OFF -DMINER=OFF -DETHKEY=OFF -DSERPENT=OFF -DGUI=OFF -DTESTS=OFF -DJSCONSOLE=OFF ..
-#RUN make -j4 
-#RUN make install
+RUN git clone https://github.com/ethereum/cpp-ethereum.git
+RUN mkdir cpp-ethereum/build
+
+WORKDIR /tmp/cpp-ethereum/build
+
+RUN git submodule update --init
+RUN cmake -DJSONRPC=OFF -DMINER=OFF -DETHKEY=OFF -DSERPENT=OFF -DGUI=OFF -DTESTS=OFF -DJSCONSOLE=OFF ..
+RUN make -j4 
+RUN make install
+
+RUN rm -rf /tmp/cpp-ethereum/build
+
+WORKDIR /
 
 # Link the Solidity compiler (in geth)
 #admin.setSolc("path/to/solc")
-
-WORKDIR /
 
 ENV ETH_DATA_DIR=/var/lib/ethereum/data \
     # Uhncomment andf build if you want to run with debug
