@@ -12,7 +12,7 @@ Forwarding can be chained as long as necessary and the echoed output will \
 contain the path taken.  The echoserver runs in both Kubernetes and in AWS instances.\
 
 - kafka (k8s only): This contains a basic Kafka deployment (including a ZK deployment) in \
-Kubernetes.  It makes extensive use of stateful sets. 
+Kubernetes.  It makes extensive use of stateful sets.
 
 - ethereum (k8s only): This deploys all of the components needed to deploy and bootstrap a \
 private ethereum network.
@@ -26,13 +26,36 @@ The following infrastructure will be deployed to AWS (us-west-2 right now):
   - A service called dumbstack is deployed.  This service contains two ENIs, one for each subnet.  In short, based on a configuration (see below), dumbstack will poll the AWS API to see if it should setup load balancing for any instances running in AWS.  By default, it will discover all echoservers running in the "Cloud VPC."  The power of dumbstack is its ability to load balance requests across different subnets.  This is particularly useful when running services across public and private clouds.  Dumbstack can be used as a proxy between cloud and on-prem networks.
   - VPC peering is setup between the "private" subnet in the "Cloud VPC" and the Kubernetes VPC.
 
-Here is a figure captuing the main components:
+Here is a figure captuing the main components (This may not be rendered):
 
 <object data="https://github.com/kmgreen2/cloud-deployments/blob/master/docs/VPCFigure.pdf" type="application/pdf" width="700px" height="700px">
     <embed src="https://github.com/kmgreen2/cloud-deployments/blob/master/docs/VPCFigure.pdf">
         This browser does not support PDFs. Please download the PDF to view it: <a href="https://github.com/kmgreen2/cloud-deployments/blob/master/docs/VPCFigure.pdf">Download PDF</a>.</p>
     </embed>
 </object>
+
+This basic architecture provides the following:
+
+- A Kubernetes cluster to deploy services (via writing Docker and Kubernetes manifests: manifest/(docker|k8s)/<service>/)
+- Multiple VPCs to deploy services (via writing Packer and Terraform manifests: manifest/(packer|terraform)/<service>/)
+- A way to explore networking between instances and Kubernetes across VPCs (using echoserver deployed to all VPCs and targets)
+
+The echoserver service provides templates for configuring VM and Kubernetes
+instances.  The dumbstack service provides a simple example for load balancing
+across multiple, disparate networks.
+
+The base architecture demonstrates the ability to terminate requests at an
+external load balancer, traverse Kubernetes echoserver instances and use
+dumbstack to route traffic between different subnets, without any application
+changes.  This is demonstrated using echoserver and dumbstack.
+
+Here is a quick example:
+
+```
+$ echo "PROXY:10.0.1.120:hello,world" | nc a9b05421435c511e8b96306ffb83a48f-713350992.us-west-2.elb.amazonaws.com 1337
+echoserver-749f79b797-ktvc9 : 10.0.1.120 (proxy) : ip-10-0-2-17.us-west-2.compute.internal : hello,world
+```
+This shows a single request getting proxies and traversing 2 VPCs (via peering) and 3 subnets.
 
 ## Quickstart
 
