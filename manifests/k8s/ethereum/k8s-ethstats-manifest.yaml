@@ -1,0 +1,76 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: ethereum-ethstats
+  namespace: ethereum
+  annotations:
+    container.apparmor.security.beta.kubernetes.io/ethereum-ethstats: "unconfined"
+spec:
+  selector:
+    matchLabels:
+      app: ethereum-ethstats
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ethereum-ethstats
+    spec:
+      containers:
+      - name: ethereum-ethstats
+        securityContext:
+          capabilities:
+            add: ["SYS_PTRACE"]
+        imagePullPolicy: Always
+        image: "kmgreen2/ethereum-ethstats:latest"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "0.1"
+        ports:
+        - containerPort: 3000
+          name: server
+        command:
+        - sh
+        - -c
+        - "/start_ethstats.sh"
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "nc -z -v localhost 3000"
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "nc -z -v localhost 3000"
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        volumeMounts:
+        - name: logdir
+          mountPath: /var/log/ethereum
+      securityContext:
+        fsGroup: 1000
+      volumes:
+        - name: logdir
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ethereum-ethstats
+  namespace: ethereum
+  labels:
+    app: ethereum-ethstats
+spec:
+  ports:
+  - port: 3000
+    name: ethereum-ethstats
+    protocol: TCP
+  selector:
+    app: ethereum-ethstats
+  type: LoadBalancer
+

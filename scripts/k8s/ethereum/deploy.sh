@@ -24,4 +24,4 @@ done
 # Members and miners can be added once boot nodes are up
 kubectl apply -f ${K8S_MANIFEST_DIR}/k8s-membernode-manifest.yaml
 kubectl apply -f ${K8S_MANIFEST_DIR}/k8s-miner-manifest.yaml
-
+kubectl apply -f ${K8S_MANIFEST_DIR}/k8s-ethstats-manifest.yaml

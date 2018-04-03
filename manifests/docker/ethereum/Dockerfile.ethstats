@@ -1,0 +1,24 @@
+FROM golang:1.9.2
+
+RUN apt-get update
+RUN apt-get install dnsutils -y
+RUN apt-get install wget -y
+RUN apt-get install netcat -y
+RUN apt-get install net-tools -y
+RUN apt-get install vim -y
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
+RUN apt-get install nodejs -y
+
+WORKDIR /root
+
+RUN git clone https://github.com/cubedro/eth-netstats
+
+WORKDIR /root/eth-netstats
+
+RUN npm install
+RUN npm install -g grunt-cli
+RUN grunt all
+
+EXPOSE 3000 3000
+
+COPY service/ethereum/start_ethstats.sh /

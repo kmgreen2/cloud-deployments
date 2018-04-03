@@ -15,7 +15,8 @@ contain the path taken.  The echoserver runs in both Kubernetes and in AWS insta
 Kubernetes.  It makes extensive use of stateful sets.
 
 - ethereum (k8s only): This deploys all of the components needed to deploy and bootstrap a \
-private ethereum network.
+private ethereum network.  This includes the ability to compile and deploy smart contracts.
+The base image includes geth and Solidity.
 
 The following infrastructure will be deployed to AWS (us-west-2 right now):
 
@@ -49,7 +50,7 @@ external load balancer, traverse Kubernetes echoserver instances and use
 dumbstack to route traffic between different subnets, without any application
 changes.  This is demonstrated using echoserver and dumbstack.
 
-Here is a quick example:
+Here are some quick examples (there are three subnets: the k8s subnet, 10.0.1.0/24 and 10.0.2.0/24):
 
 ```
 $ echo "PROXY:10.0.1.120:hello,world" | nc a9b05421435c511e8b96306ffb83a48f-713350992.us-west-2.elb.amazonaws.com 1337
@@ -66,6 +67,8 @@ This shows a single request getting proxies and traversing 2 VPCs (via peering) 
 - Put a key-pair in this directory to be used for instance-to-instance ssh in AWS (they must be called: id_rsa_instance.pub and id_rsa_instance)
 
 - Be sure to export your AWS credentials to the following env vars: ARG_AWS_ACCESS_KEY_ID, ARG_AWS_SECRET_ACCESS_KEY
+
+- If using ethereum, export a secret to be used for ethstats.  Export it into WS_SECRET.  If it is not set, it will be set to "changeme"
 
 - Create a directory called root-dir, which is used to maintain the configurations generated for the resulting Kuberneters cluster. 
 
