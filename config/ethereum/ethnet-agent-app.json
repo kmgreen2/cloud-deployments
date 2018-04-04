@@ -1,0 +1,25 @@
+[
+  {
+    "name"              : "node-app",
+    "script"            : "app.js",
+    "log_date_format"   : "YYYY-MM-DD HH:mm Z",
+    "merge_logs"        : false,
+    "watch"             : false,
+    "max_restarts"      : 10,
+    "exec_interpreter"  : "node",
+    "exec_mode"         : "fork_mode",
+    "env":
+    {
+      "NODE_ENV"        : "production",
+      "RPC_HOST"        : "localhost",
+      "RPC_PORT"        : "8101",
+      "LISTENING_PORT"  : "30303",
+      "INSTANCE_NAME"   : "VAR_INSTANCENAME",
+      "CONTACT_DETAILS" : "",
+      "WS_SERVER"       : "ws://ethereum-ethstats.ethereum.svc.cluster.local:3000",
+      "WS_SECRET"       : "changeme",
+      "VERBOSITY"       : 2
+    }
+  }
+]
+

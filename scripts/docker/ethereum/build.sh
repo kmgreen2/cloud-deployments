@@ -7,6 +7,7 @@ sudo docker build ${BASE_DIR} -f ${DOCKER_MANIFEST_DIR}/Dockerfile.enode_bootstr
 sudo docker build ${BASE_DIR} -f ${DOCKER_MANIFEST_DIR}/Dockerfile.membernode -t kmgreen2/ethereum-member:latest
 sudo docker build ${BASE_DIR} -f ${DOCKER_MANIFEST_DIR}/Dockerfile.miner -t kmgreen2/ethereum-miner:latest
 sudo docker build ${BASE_DIR} -f ${DOCKER_MANIFEST_DIR}/Dockerfile.ethstats -t kmgreen2/ethereum-ethstats:latest
+sudo docker build ${BASE_DIR} -f ${DOCKER_MANIFEST_DIR}/Dockerfile.ethnet-agent -t kmgreen2/ethereum-ethnet-agent:latest
 
 if [[ $1 == "push" ]]; then
     sudo docker push kmgreen2/ethereum-base
@@ -15,5 +16,6 @@ if [[ $1 == "push" ]]; then
     sudo docker push kmgreen2/ethereum-member
     sudo docker push kmgreen2/ethereum-miner
     sudo docker push kmgreen2/ethereum-ethstats
+    sudo docker push kmgreen2/ethereum-ethnet-agent
 fi
 
