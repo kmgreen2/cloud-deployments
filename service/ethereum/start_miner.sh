@@ -15,8 +15,10 @@ while [[ -z $ETH_BOOT_NODE ]]; do
 done
 
 echo "changeme" > $ETH_DATA_DIR/.miner.pwd
+export ETHERBASE="2dbeb96b6fdf54834b3c33cd50e1349ac7bef7c6"
 
-export ETHERBASE=`geth account new --password $ETH_DATA_DIR/.miner.pwd  | egrep -o '[0-9a-z]{40}'`
+mkdir -p $ETH_DATA_DIR/keystore
+cp $ETH_DATA_DIR/keystore.json $ETH_DATA_DIR/keystore/UTC--2018-04-06T01-53-33.216988388Z--$ETHERBASE
 
 if [[ -n $ETH_DEBUG ]]; then
     DLV="dlv --headless=true --listen=:$ETH_DEBUG_PORT --log --api-version=2 exec"

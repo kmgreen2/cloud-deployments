@@ -82,11 +82,16 @@ func getENode(w http.ResponseWriter, r *http.Request) {
     }
 }
 
+func getBaseAccountw http.ResponseWriter, r *http.Request) {
+
+}
+
 func main() {
 
     port := flag.Int("port", 80, "port number of listen on")
     flag.Parse()
     http.HandleFunc("/", getENode) // set router
+    http.HandleFunc("/", getBaseAccount) // set router
     err := http.ListenAndServe(fmt.Sprintf(":%d", *port), nil) // set listen port
     if err != nil {
         log.Fatal("ListenAndServe: ", err)

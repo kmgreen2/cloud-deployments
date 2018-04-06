@@ -29,6 +29,23 @@ spec:
         volumeMounts:
         - name: logdir
           mountPath: /var/log/ethereum
+      - name: ethereum-ethnet-agent
+        securityContext:
+          capabilities:
+            add: ["SYS_PTRACE"]
+        imagePullPolicy: Always
+        image: "kmgreen2/ethereum-ethnet-agent:latest"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "0.1"
+        command:
+        - sh
+        - -c
+        - "/start_ethnet_agent.sh"
+        volumeMounts:
+        - name: logdir
+          mountPath: /var/log/ethereum
       securityContext:
         fsGroup: 1000
       volumes:

@@ -1,3 +1,4 @@
 FROM kmgreen2/ethereum-base:latest
 
+COPY service/ethereum/keystore.json $ETH_DATA_DIR/
 COPY service/ethereum/start_miner.sh /

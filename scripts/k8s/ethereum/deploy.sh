@@ -11,7 +11,7 @@ kubectl apply -f ${K8S_MANIFEST_DIR}/k8s-bootnode-manifest.yaml
 IS_READY=`kubectl get pods -n ethereum | grep 'ethereum-boot' | grep 'Running'`
 NUM_TRIES=0
 while [[ -z ${IS_READY} ]]; do
-    if (( NUM_TRIES > 5 )); then
+    if (( NUM_TRIES > 8 )); then
         echo "Bootnode is still not available...  Bailing..."
         exit
     fi

@@ -12,7 +12,7 @@ spec:
   selector:
     matchLabels:
       app: echoserver
-  replicas: 2
+  replicas: 4
   template:
     metadata:
       labels:
