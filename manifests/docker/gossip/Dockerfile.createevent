@@ -1,0 +1,14 @@
+FROM golang:1.10-alpine
+
+ARG GITHUB_TOKEN
+RUN apk add --no-cache git make protobuf
+RUN go get -u google.golang.org/grpc
+RUN go get -u github.com/golang/protobuf/protoc-gen-go
+ENV PATH "$PATH:$GOPATH/bin"
+RUN mkdir -p /usr/local/go/src/github.com/kmgreen2/
+WORKDIR /usr/local/go/src/github.com/kmgreen2/
+RUN git clone https://$GITHUB_TOKEN@github.com/kmgreen2/gossip.git
+WORKDIR /usr/local/go/src/github.com/kmgreen2/gossip
+RUN make createevent
+RUN cp bin/createevent /
+WORKDIR /bin

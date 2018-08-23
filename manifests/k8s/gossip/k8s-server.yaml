@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gossip-server
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: gossip-server
+  namespace: gossip-server
+spec:
+  selector:
+    matchLabels:
+      app: gossip-server
+  replicas: 4
+  template:
+    metadata:
+      labels:
+        app: gossip-server
+    spec:
+      containers:
+      - name: gossip-server
+        imagePullPolicy: Always
+        image: "docker.io/kmgreen2/gossip-server:latest"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "1.0"
+        ports:
+        - containerPort: 8081
+          name: server
+        command:
+        - sh
+        - -c
+        - "/server -port 8081"
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "echo | nc --send-only -v -u -w5 localhost 8081"
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "echo | nc --send-only -v -u -w5 localhost 8081"
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+      securityContext:
+        fsGroup: 1000

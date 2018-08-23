@@ -9,3 +9,4 @@ id_rsa_instance.pub
 .terraform
 *.tfstate
 *.tfstate.backup
+crash.log
