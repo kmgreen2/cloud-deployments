@@ -3,7 +3,7 @@ DOCKER_MANIFEST_DIR=${BASE_DIR}/manifests/docker/gossip
 BINS="addpeer server createevent"
 
 for bin in ${BINS}; do
-    docker build --build-arg GITHUB_TOKEN=`cat ~/.gitaccess` ${BASE_DIR} -f ${DOCKER_MANIFEST_DIR}/Dockerfile.${bin} -t kmgreen2/gossip-${bin}:latest
+    sudo docker build --build-arg GITHUB_TOKEN=`cat ~/.gitaccess` ${BASE_DIR} -f ${DOCKER_MANIFEST_DIR}/Dockerfile.${bin} -t kmgreen2/gossip-${bin}:latest
 
     if [[ $? != "0" ]]; then
         break
