@@ -32,7 +32,7 @@ spec:
         command:
         - sh
         - -c
-        - "/server -port 8081"
+        - "/server -port :8081"
         readinessProbe:
           exec:
             command:
