@@ -3,12 +3,14 @@ FROM centos:7
 ARG ARG_AWS_ACCESS_KEY_ID
 ARG ARG_AWS_SECRET_ACCESS_KEY
 
+RUN yum clean all
 RUN yum update -y
 RUN yum install -y python
 RUN yum install -y curl
 RUN yum install -y wget
 RUN yum install -y bash
 RUN yum install -y vim
+RUN yum install -y openssh-clients
 
 # Install latest pip.
 RUN wget https://bootstrap.pypa.io/get-pip.py
@@ -22,7 +24,7 @@ RUN curl -LO https://github.com/kubernetes/kops/releases/download/$(curl -s http
 RUN chmod +x kops-linux-amd64
 RUN mv kops-linux-amd64 /usr/local/bin/kops
 
-RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/v$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/bin/linux/amd64/kubectl
 RUN chmod +x ./kubectl
 RUN mv ./kubectl /usr/local/bin/kubectl
 
