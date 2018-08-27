@@ -38,7 +38,7 @@ spec:
             command:
             - sh
             - -c
-            - "echo | nc --send-only -v -u -w5 localhost 8081"
+            - "nc -z -v -w5 localhost 8081"
           initialDelaySeconds: 10
           timeoutSeconds: 5
         livenessProbe:
@@ -46,7 +46,7 @@ spec:
             command:
             - sh
             - -c
-            - "echo | nc --send-only -v -u -w5 localhost 8081"
+            - "nc -z -v -w5 localhost 8081"
           initialDelaySeconds: 10
           timeoutSeconds: 5
       securityContext:

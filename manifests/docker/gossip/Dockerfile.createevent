@@ -5,6 +5,7 @@ RUN apk add --no-cache git make protobuf
 RUN go get -u google.golang.org/grpc
 RUN go get -u github.com/golang/protobuf/protoc-gen-go
 ENV PATH "$PATH:$GOPATH/bin"
+ARG CACHEBUST=1
 RUN mkdir -p /usr/local/go/src/github.com/kmgreen2/
 WORKDIR /usr/local/go/src/github.com/kmgreen2/
 RUN git clone https://$GITHUB_TOKEN@github.com/kmgreen2/gossip.git
