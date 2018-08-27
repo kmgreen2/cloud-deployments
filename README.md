@@ -18,6 +18,10 @@ Kubernetes.  It makes extensive use of stateful sets.
 private ethereum network.  This includes the ability to compile and deploy smart contracts.
 The base image includes geth and Solidity.
 
+- gossip (k8s only): This deploys a simple peer-to-peer timestamp service that keeps in logical \
+clocks in sync with peers.  Simple scripts are used to add peering relationships, adding events \
+and dumping events and their timestamps.
+
 The following infrastructure will be deployed to AWS (us-west-2 right now):
 
 - Kubernetes cluster in its own VPC (currently using kops)
@@ -130,7 +134,7 @@ Just run this:
 
 ### Deploying Other Services to Kubernetes
 
-We currently have support for Kafka and Ethereum.  To deploy these services to Kubernetes, run:
+To deploy other supported services to Kubernetes, run:
 
 `/scripts/k8s/<service>/deploy.sh`
 
